@@ -9,6 +9,8 @@ const Home: NextPage = () => {
   const refSignInWrapper = useRef(null);
 
   const handleCallbackResponse = (response) => {
+    // TODO: From here you can handle the access token from Google.
+
     const data = jwtDecode(response.credential);
 
     const user = {
@@ -29,10 +31,6 @@ const Home: NextPage = () => {
 
     google.accounts.id.initialize({
       client_id: clientId,
-      scope: [
-        "https://www.googleapis.com/auth/userInfo.email",
-        "https://www.googleapis.com/auth/userInfo.profile",
-      ],
       callback: handleCallbackResponse,
     });
 
