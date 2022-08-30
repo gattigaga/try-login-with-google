@@ -1,28 +1,41 @@
 import type { NextPage } from "next";
 import { useEffect, useRef } from "react";
 import Head from "next/head";
-import jwtDecode from "jwt-decode";
+import { useRouter } from "next/router";
+import axios from "axios";
 
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   const refSignInWrapper = useRef(null);
+  const router = useRouter();
 
   const handleCallbackResponse = (response) => {
     // TODO: From here you can handle the access token from Google.
 
-    const data = jwtDecode(response.credential);
+    axios
+      .post(
+        `http://167.172.70.208:8001/api/sign-in/google`,
+        {
+          token: response.credential,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        localStorage.setItem(
+          "access_token",
+          response.data.data.access_token.token
+        );
 
-    const user = {
-      id: data.sub,
-      name: data.name,
-      email: data.email,
-      picture: data.picture,
-    };
-
-    console.clear();
-    console.log(response.credential);
-    console.log(user);
+        router.replace("/dashboard");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   useEffect(() => {

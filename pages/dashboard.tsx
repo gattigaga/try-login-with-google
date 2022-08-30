@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import axios from "axios";
 
 const Dashboard: NextPage = () => {
   const [user, setUser] = useState<any>(null);
@@ -9,23 +10,20 @@ const Dashboard: NextPage = () => {
     const token = localStorage.getItem("access_token");
 
     if (token) {
-      fetch("https://noobium.herokuapp.com/api/me/profile", {
-        headers: new Headers({
-          accept: "application/json",
-          authorization: `Bearer ${token}`,
-        }),
-      })
+      axios
+        .get(`http://167.172.70.208:8001/api/me/profile`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-
-          throw new Error("Something went wrong!");
+          console.log(response);
+          setUser(response.data.data);
         })
-        .then((data) => {
-          setUser(data.data);
-        })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }, []);
 
@@ -57,6 +55,7 @@ const Dashboard: NextPage = () => {
               }}
               src={user.picture}
               alt={user.name}
+              referrerPolicy="no-referrer"
             />
             <p>{user.name}</p>
             <p>{user.email}</p>
